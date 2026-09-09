@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aegis ResponseNet — Recovery console</title><meta name="description" content="A working durable reservation recovery demo backed by PostgreSQL.">
+<link rel="stylesheet" href="/app.css"><script src="/app.js" defer></script></head>
+<body>
+<main>
+<header><p class="eyebrow">AEGIS RESPONSENET / OPERATIONS LAB</p><h1>Failure happens.<br><span>Recovery is a workflow.</span></h1>
+<p class="lede">Reserve synthetic emergency-response equipment. Watch durable events drive fulfillment, compensate failures, and survive duplicate delivery.</p></header>
+<section class="connection" aria-label="Connection"><label>API key <input id="api-key" type="password" placeholder="Leave empty for local mode" autocomplete="off"></label><button id="connect" class="secondary">Connect / refresh</button><span id="connection" role="status">Connecting…</span></section>
+<div id="notice" role="status" aria-live="polite"></div>
+<section class="metrics" id="metrics" aria-label="Inventory and event metrics"></section>
+<div class="workbench">
+<section class="panel"><div class="section-label">01 / COMMAND</div><h2>Create a reservation</h2>
+<form id="reservation-form">
+<label>Equipment<select id="sku"><option value="FIELD-KIT">Field kit</option><option value="RADIO">Radio</option></select></label>
+<label>Quantity<input id="quantity" type="number" min="1" max="1000" value="2" required></label>
+<label>Idempotency key<div class="inline"><input id="command-key" required maxlength="128"><button type="button" id="new-key" class="secondary">New</button></div></label>
+<label class="checkbox"><input id="failure" type="checkbox">Simulate fulfillment failure</label>
+<p class="hint">Failure takes the compensation path and returns reserved inventory. Resend the same command to verify deduplication.</p>
+<button type="submit">Reserve equipment</button></form>
+</section>
+<section class="panel"><div class="section-label">02 / DELIVERY</div><h2>Control the worker</h2>
+<p>Each delivery commits its inbox record, state change, and projection together. Acknowledgement happens after that commit.</p>
+<p id="worker-status" class="worker-status"></p>
+<div id="demo-controls" hidden>
+<div class="buttons"><button id="pause" class="secondary">Pause worker</button><button id="step" class="secondary">Deliver one event</button></div>
+<div class="divider"></div>
+<label>Inject one transient failure<select id="fault-stage"><option value="before-consume">Before consumer transaction</option><option value="after-consume">After commit, before acknowledgement</option></select></label>
+<button id="fault" class="secondary">Arm failure</button>
+<p class="hint">Pause first for controlled steps. The next delivery retries with exponential backoff. Use event replay to exercise duplicate handling.</p>
+</div><p id="controls-disabled" class="hint" hidden>Failure controls are disabled on this server.</p>
+</section></div>
+<section class="panel"><div class="section-label">03 / READ MODEL</div><h2>Reservations and projections</h2><p class="hint">The write state can lead its projection until the next event is delivered.</p><div class="table-scroll"><table><thead><tr><th>Reservation</th><th>Equipment</th><th>Qty</th><th>Write state</th><th>Projection</th></tr></thead><tbody id="reservations"></tbody></table></div></section>
+<section class="panel"><div class="section-label">04 / EVENT HISTORY</div><h2>Durable delivery ledger</h2><div class="table-scroll"><table><thead><tr><th>Event</th><th>Reservation</th><th>Version</th><th>Attempts</th><th>Delivery</th><th></th></tr></thead><tbody id="events"></tbody></table></div></section>
+<footer>Java 21 · PostgreSQL · Transactional outbox · Synthetic data only<br>At-least-once delivery with idempotent effects inside one database. No external responder or inventory system is contacted.</footer>
+</main></body></html>

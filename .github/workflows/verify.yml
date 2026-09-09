@@ -1,0 +1,46 @@
+name: verify
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  durable-workflow:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17.11-alpine
+        env:
+          POSTGRES_DB: aegis_test
+          POSTGRES_USER: aegis
+          POSTGRES_PASSWORD: integration-test-only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U aegis -d aegis_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: jdbc:postgresql://localhost:5432/aegis_test
+      DATABASE_USERNAME: aegis
+      DATABASE_PASSWORD: integration-test-only
+      AEGIS_INTEGRATION_TESTS: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - run: mvn -B -ntp verify
+      - name: Real process restart smoke
+        run: python3 scripts/restart_smoke.py
+      - name: Build deployment image
+        run: docker build --tag aegis-responsenet:ci .
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verification-results
+          path: |
+            target/surefire-reports/
+            target/failsafe-reports/
+            target/restart-smoke.json

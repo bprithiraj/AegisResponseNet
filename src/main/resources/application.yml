@@ -1,0 +1,35 @@
+server:
+  address: ${AEGIS_BIND_ADDRESS:127.0.0.1}
+  port: ${PORT:8080}
+  error:
+    include-message: never
+spring:
+  application:
+    name: aegis-responsenet
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/aegis}
+    username: ${DATABASE_USERNAME:aegis}
+    password: ${DATABASE_PASSWORD:aegis-local-only}
+    hikari:
+      maximum-pool-size: 12
+      connection-timeout: 5000
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+aegis:
+  api-key: ${AEGIS_API_KEY:}
+  worker:
+    enabled: ${AEGIS_WORKER_ENABLED:true}
+    poll-ms: ${AEGIS_WORKER_POLL_MS:500}
+    lease-seconds: ${AEGIS_LEASE_SECONDS:30}
+    max-attempts: ${AEGIS_MAX_ATTEMPTS:8}
+    retry-base-ms: ${AEGIS_RETRY_BASE_MS:1000}
+  demo-controls: ${AEGIS_DEMO_CONTROLS:false}
