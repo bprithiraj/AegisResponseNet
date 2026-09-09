@@ -50,7 +50,7 @@ The checked-in .mvn settings use HTTPS Maven Central and isolate this personal p
 2. **Compensation:** use a new key and enable simulated fulfillment failure. Watch RESERVED become COMPENSATION_PENDING, then COMPENSATED. Inventory returns exactly once.
 3. **Commit-before-ack failure:** pause the worker, create a reservation, arm "After commit, before acknowledgement", and deliver one event. The state transition persists while delivery retries. Resume the worker and observe convergence.
 4. **Duplicate event:** replay an acknowledged event. The durable inbox prevents a second business effect.
-5. **Real process restart:** run the restart smoke below. It submits a command with the worker disabled, kills Java, starts a new JVM on the same database, and verifies compensation, projection convergence, and command deduplication.
+5. **Real process restart:** run the restart smoke below. It pauses the worker, leaves one command after its producer commit and another after its consumer commit before acknowledgement, kills Java, then verifies recovery in a new JVM against the same database.
 
 No external emergency service is contacted. "Simulate fulfillment failure" selects a deterministic synthetic fulfillment outcome; the persistence and retry behavior are real.
 
@@ -155,3 +155,7 @@ See [VERIFICATION.md](VERIFICATION.md) for the actual release checks and [the Po
 ## License
 
 MIT. All example incidents, equipment and outcomes are synthetic.
+
+## Working console
+
+![Aegis console with durable compensation and replay evidence](validation/screenshots/console.png)

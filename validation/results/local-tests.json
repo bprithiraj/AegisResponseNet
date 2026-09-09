@@ -1,0 +1,24 @@
+{
+  "verified_on": "2026-09-10",
+  "platform": "Windows",
+  "java": "21.0.4",
+  "postgresql": "17.11",
+  "unit_tests": {
+    "command": "mvn -B -ntp package",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "integration_tests": {
+    "command": "mvn -B -ntp verify",
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "note": "Database workflow passed before the later HTTP-only path-authentication fix; database code was unchanged."
+  },
+  "process_restart": "Passed; see local-restart-smoke.json",
+  "docker": "Not executed locally; Docker is unavailable. CI includes an image build.",
+  "browser_visual_qa": "Not performed"
+}

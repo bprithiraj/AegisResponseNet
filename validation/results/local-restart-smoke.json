@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "scenario": "producer commit and consumer commit-before-ack -> kill Java -> restart -> compensate -> project -> replay",
+  "reservation_id": "93db5757-93c9-457a-9960-b6532d2c0464",
+  "queued_reservation_id": "b0aa5743-316b-4a46-9613-7b0b62b5a642",
+  "write_status": "COMPENSATED",
+  "projection_status": "COMPENSATED",
+  "http_guards": [
+    "API key",
+    "matrix path",
+    "encoded paths",
+    "input validation",
+    "key conflict"
+  ]
+}
